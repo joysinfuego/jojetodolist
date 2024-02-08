@@ -1,129 +1,120 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-
-    <title> To Do List </title>
-  </head>
-  <body>
-  <div class="container vh-100 mb-5">
-        <!-- navbar start -->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                    <?php
-                    if (isset($_SESSION['Register'])) {
-                        $userID = $_SESSION['u_id'];
-
-                        $getUser = $conn->prepare("SELECT user_fname FROM users WHERE user_id = ?");
-                        $getUser->execute([$userID]);
-
-                        foreach ($getUser as $user) { ?>
-                            <a class="nav-link me-3" href="process.php?logout">Welcome <b><?= $users['user_fname'] ?></b>, Logout</a>
-                        <?php } ?>
-                    <?php } else { ?>
-                        <a class="nav-link me-3" href="register.php">Register</a>
-                    <?php } ?>
-                    </ul>
-                    <?php
-                    if (isset($_SESSION['logged_in'])) {
-                        $userID = $_SESSION['u_id'];
-
-                        $getUser = $conn->prepare("SELECT user_fname FROM users WHERE user_id = ?");
-                        $getUser->execute([$userID]);
-
-                        foreach ($getUser as $user) { ?>
-                            <a class="nav-link me-3" href="process.php?logout">Welcome <b><?= $users['user_fname'] ?></b>, Logout</a>
-                        <?php } ?>
-                    <?php } else { ?>
-                        <a class="nav-link me-3" href="login.php">Login</a>
-                    <?php } ?>
-
-                </div>
-            </div>
-        </nav>
-        <!-- navbar end -->
-        <body style="background-color: pink;">
-
-    <h1 class="text-center py-4 my-4">To DO List</h1>
-
-    <div class="w-50 m-auto">
-    <form action="data.php" method="post" autocomplete="off">
-        <div class="form-group">
-            <label for="title"><center>TITLE</center></label>
-            <input class="form-control" type="text" name="title" id="title" placeholder="Type Here To Add On ToDo'S" Required>
-
-        </div><br>
-        <button class="btn btn-success">Add To ToDo'S</button>
-    </form>
-
-    </div><br>
-    <hr class="bg-dark w-50 m-auto">
-    <div class="lists w-50 m-auto my-4">
-        <h1>Your Lists</h1>
-        <div id="lists">
-        <table class=" table table-hover" style="background-color: aqua">
-  <thead>
-    <tr>
-      <th scope="col" name="id">#</th>
-      <th scope="col">To Do List</th>
-    <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-  <?php
-        include 'conn.php';
-        $sql="SELECT * FROM webtask";
-        $result=mysqli_query($conn, $sql);
-
-        if($result){
-            while($row=mysqli_fetch_assoc($result)){
-                $id=$row['id'];
-                $title=$row['title'];
-                $count = 1;
-               
-
-
-                ?>
-                <tr>
-                    <td><?php echo $id ?></td>
-                    <td><?php echo $title?></td>
-                    <td colspan="2">
-                    <a class="btn btn-success btn-sm" href="edit.php?id=<?php echo $id ?>" role="button">Edit</a>
-                    <a class="btn btn-danger btn-sm" href="delete.php?id=<?php echo $id ?>" role="button">Delete</a>
- 
-                    </td>
-                      
-                </tr>
+<?php 
+    include 'header.php';
+    if(!isset($_SESSION['logged_in'])){
+        header("location: login.php");
+        ob_end_flush();
+    }
+ ?>
+        <!-- row for input -->
+        <div class="row justify-content-center mt-5">
+            <div class="col-6 align-items-center">
 
                 <?php
+                if (isset($_GET['update'])) { ?>
+                    <!-- display edit input -->
+                    <h2>Edit User Input</h2>
 
-                
-            }
-        }
-    ?>
-    
-   
-  </tbody>
-</table>
+                    <?php
+                    $id = $_GET['id'];
+                    // fetch the data to our database
+                    $getUser = $conn->prepare("SELECT * FROM personal_info WHERE p_id =?");
+                    $getUser->execute([$id]);
+
+                    foreach ($getUser as $data) { ?>
+
+                        <form action="process.php" method="POST" class="form shadow p-3">
+                            <input type="hidden" name="userID" value="<?= $data['p_id'] ?>">
+                            <div class="mb-2">
+                                <label for="list">Add To Do List: </label>
+                                <input type="text" class="form-control" id="list" name="list" value="<?= $data['list'] ?>">
+                            </div>
+                            <div class="mb-2">
+                                <input type="submit" name="update" value="Update" class="form-control btn btn-warning">
+                            </div>
+                        </form>
+                    <?php } ?>
+                <?php } else { ?>
+                    <!-- display user input -->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-7">
+
+                                <form action="search.php" method="GET">
+                                    <div class="input-group mb-3">
+                                        <input type="text" name="search"  class="form-control" placeholder="Search data">
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                    </div>
+                                </form>
+
+                            </div>
+
+                    <h2>To Do List</h2>
+                    
+                    <?php if (isset($_GET['msg'])) { ?>
+
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong><?= $_GET['msg']; ?></strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                    <?php   } ?>
+
+                    <form action="process.php" method="POST" class="form shadow p-3">
+                        <input type="hidden" name="userID" value="<?= $_SESSION['u_id'] ?>">
+                        <div class="mb-2">
+                            <label for="list">Add To Do List: </label>
+                            <input type="text" class="form-control" id="list" name="list">
+                        </div>
+                       
+                        <div class="mb-2">
+                            <input type="submit" name="add" value="Submit" class="form-control btn btn-success">
+                        </div>
+                    </form>
+                <?php } ?>
+
+            </div>
+        </div>
+        <hr>
+        <!-- table for display -->
+        <div class="row mt-5 justify-content-center mb-5">
+            <div class="col-8 mb-5">
+                <h2>Display Data from Database</h2>
+                <div class="table shadow p-2">
+                    <table class="table">
+                        <thead>
+                            <th>#</th>
+                            <th>List</th>
+                            <th>Action</th>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $userID = $_SESSION['u_id'];
+                            $cnt = 1;
+                            $select = $conn->prepare("SELECT * FROM personal_info WHERE user_id = ?");
+                            $select->execute([$userID]);
+                            foreach ($select as $data) { ?>
+                                <tr>
+                                    <td><?= $cnt++ ?></td>
+                                    <td><?= $data['list'] ?></td>
+                                    <td>
+                                        <a href="index.php?update&id=<?= $data['p_id'] ?>" class="text-decoration-none">✏️</a>
+                                        |
+                                        <a href="process.php?delete&id=<?= $data['p_id'] ?>" class="text-decoration-none">❌</a>
+                                    </td>
+                                </tr>
+
+                            <?php  } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
+    <footer>
+        <center>
+        <p>&copy; <?php echo date("Y"); ?> jojetodolistApp. All rights reserved.</p>
+        </center>
+    </footer>
+</body>
 
-    <!-- Optional JavaScript; choose one of the two! -->
-
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-
-  </body>
 </html>

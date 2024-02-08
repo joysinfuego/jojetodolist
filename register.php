@@ -15,7 +15,6 @@ if(isset($_SESSION['logged_in'])){
                 </div>
 
             <?php   } ?>
-            <body style="background-color: aquamarine;">
             <form method="POST" action="process.php">
                 <div class="row mb-3">
                     <label for="fname" class="col-sm-4 col-form-label">First Name</label>
@@ -49,11 +48,15 @@ if(isset($_SESSION['logged_in'])){
                 </div>
                 <button type="submit" class="btn btn-primary" name="register">Sign up</button>
             </form>
-            </form>
         </div>
     </div>
 </div>
 <!-- content end -->
+<footer>
+        <center>
+        <p>&copy; <?php echo date("Y"); ?> jojetodolistApp. All rights reserved.</p>
+        </center>
+    </footer>
 </body>
 
 </html>

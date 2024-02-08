@@ -9,7 +9,7 @@ if(isset($_POST['login'])){
     $email = $_POST['email'];
     $pass = $_POST['password'];
 
-    $check = $conn->prepare("SELECT * FROM `user` WHERE  user_email = ?");
+    $check = $conn->prepare("SELECT * FROM users WHERE user_email = ?");
     $check->execute([$email]);
 
     foreach($check as $value){
@@ -34,10 +34,10 @@ if(isset($_POST['login'])){
     <strong><?= $_GET['msg']; ?></strong>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
+<body style="background-color: aquamarine;">
 
 <?php   } ?>
-<body style="background-color: antiquewhite;">
-<form method="POST" action="index.php">
+                <form method="POST" action="login.php">
                     <div class="row mb-3">
                         <label for="email" class="col-sm-2 col-form-label">Email</label>
                         <div class="col-sm-10">
@@ -52,12 +52,17 @@ if(isset($_POST['login'])){
                     </div>
 
                 
-                <button type="submit" class="btn btn-primary" href="index.php" name="login">Sign in</button>
+                <button type="submit" class="btn btn-primary" name="login">Sign in</button>
                 <a class="btn btn-success" href="register.php">Register</a>
             </form>
             </div>
         </div>
     </div>
+    <footer>
+        <center>
+        <p>&copy; <?php echo date("Y"); ?> jojetodolistApp. All rights reserved.</p>
+        </center>
+    </footer>
 </body>
 
 </html>
